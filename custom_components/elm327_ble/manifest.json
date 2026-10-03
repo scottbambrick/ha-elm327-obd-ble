@@ -1,0 +1,17 @@
+{
+  "domain": "elm327_ble",
+  "name": "ELM327 OBD-II over Bluetooth LE",
+  "codeowners": [
+    "@scottbambrick"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "bluetooth_adapters"
+  ],
+  "documentation": "https://github.com/scottbambrick/ha-elm327-obd-ble",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/scottbambrick/ha-elm327-obd-ble/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

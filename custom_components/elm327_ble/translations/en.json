@@ -1,0 +1,12 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add a Bluetooth OBD-II dongle",
+        "description": "The dongle's Bluetooth address and which car it's plugged into.",
+        "data": {"name": "Name", "address": "Bluetooth address", "profile": "Car profile"}
+      }
+    },
+    "abort": {"already_configured": "This dongle is already added."}
+  }
+}
