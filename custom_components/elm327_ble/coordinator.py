@@ -14,11 +14,13 @@ triggers a check straight away. Values keep their last reading.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import math
 from datetime import datetime, timedelta
 
 from homeassistant.components import bluetooth
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import dt as dt_util
@@ -42,7 +44,7 @@ class ObdCoordinator(DataUpdateCoordinator[dict]):
     def __init__(
         self,
         hass: HomeAssistant,
-        entry,
+        entry: ConfigEntry,
         address: str,
         profile_key: str,
         name: str,
@@ -58,7 +60,7 @@ class ObdCoordinator(DataUpdateCoordinator[dict]):
         self.address = address.upper()
         self.profile_key = profile_key
         self.profile = PROFILES[profile_key]
-        self.data = {}
+        self.data: dict = {}
         self.last_seen: datetime | None = None     # dongle answered
         self.last_reading: datetime | None = None  # engine ECU answered
         self.last_error: str | None = None
@@ -97,9 +99,11 @@ class ObdCoordinator(DataUpdateCoordinator[dict]):
         return self.data
 
     async def async_shutdown(self) -> None:
-        """Cancel any running session."""
+        """Cancel any running session and wait for it to hang up."""
         if self.busy:
             self._task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await self._task
         await super().async_shutdown()
 
     def _push(self, **values) -> None:

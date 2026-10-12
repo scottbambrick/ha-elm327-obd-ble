@@ -1,9 +1,14 @@
-"""OBD port voltage, the profile's engine readings, last engine reading."""
+"""OBD port voltage, the profile's engine readings, last engine reading.
+
+Every value keeps its last reading, also across Home Assistant restarts.
+"""
 from __future__ import annotations
 
+from datetime import datetime
+
 from homeassistant.components.sensor import (
+    RestoreSensor,
     SensorDeviceClass,
-    SensorEntity,
     SensorEntityDescription,
     SensorStateClass,
 )
@@ -15,6 +20,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from . import ObdConfigEntry
 from .entity import ObdEntity
@@ -99,7 +105,7 @@ async def async_setup_entry(
     async_add_entities([*entities, LastReading(coordinator)])
 
 
-class ObdSensor(ObdEntity, SensorEntity):
+class ObdSensor(ObdEntity, RestoreSensor):
     """One value; keeps its last reading."""
 
     def __init__(
@@ -109,13 +115,23 @@ class ObdSensor(ObdEntity, SensorEntity):
         super().__init__(coordinator, description.key)
         self.entity_description = description
 
+    async def async_added_to_hass(self) -> None:
+        """Bring back the value from before a restart (until a new read)."""
+        await super().async_added_to_hass()
+        data = self.coordinator.data
+        if data.get(self._key) is not None:
+            return
+        last = await self.async_get_last_sensor_data()
+        if last is not None and last.native_value is not None:
+            data[self._key] = last.native_value
+
     @property
     def native_value(self):
         """The latest value."""
         return (self.coordinator.data or {}).get(self._key)
 
 
-class LastReading(ObdEntity, SensorEntity):
+class LastReading(ObdEntity, RestoreSensor):
     """When the engine ECU last answered (the readings are from then)."""
 
     _attr_name = "Last engine reading"
@@ -125,6 +141,20 @@ class LastReading(ObdEntity, SensorEntity):
     def __init__(self, coordinator) -> None:
         """Create the sensor."""
         super().__init__(coordinator, "last_reading")
+
+    async def async_added_to_hass(self) -> None:
+        """Bring back the times from before a restart."""
+        await super().async_added_to_hass()
+        c = self.coordinator
+        last = await self.async_get_last_sensor_data()
+        if c.last_reading is None and last is not None and isinstance(
+            last.native_value, datetime
+        ):
+            c.last_reading = last.native_value
+        state = await self.async_get_last_state()
+        if c.last_seen is None and state is not None:
+            seen = state.attributes.get("dongle_last_answered")
+            c.last_seen = dt_util.parse_datetime(seen) if seen else None
 
     @property
     def native_value(self):

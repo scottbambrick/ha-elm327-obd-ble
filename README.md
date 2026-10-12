@@ -42,7 +42,8 @@ the dongle last answered and the last error).
 - When the dongle is heard advertising (many wake when the car starts), it
   checks straight away instead of waiting.
 - Readings keep their last value while the car is away or the dongle
-  sleeps.
+  sleeps, and across Home Assistant restarts (*Engine running* excepted:
+  it is re-checked straight away).
 - Home Assistant picks whichever connectable adapter or proxy hears the
   dongle best.
 
@@ -111,3 +112,15 @@ Add a `Profile` to `PROFILES` (and a `SensorEntityDescription` in
 ## Licence
 
 [MIT](LICENSE).
+
+## Development
+
+The protocol code is covered by unit tests that run without Home Assistant:
+
+```sh
+pip install pytest cryptography
+pytest
+```
+
+GitHub Actions runs them, `ruff`, `hassfest` and the HACS validation on
+every push.

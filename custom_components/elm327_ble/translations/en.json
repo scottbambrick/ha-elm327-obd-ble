@@ -3,10 +3,19 @@
     "step": {
       "user": {
         "title": "Add a Bluetooth OBD-II dongle",
-        "description": "The dongle's Bluetooth address and which car it's plugged into.",
-        "data": {"name": "Name", "address": "Bluetooth address", "profile": "Car profile"}
+        "description": "The dongle's Bluetooth address (e.g. AA:BB:CC:DD:EE:FF) and which car it's plugged into.",
+        "data": {
+          "name": "Name",
+          "address": "Bluetooth address",
+          "profile": "Car profile"
+        }
       }
     },
-    "abort": {"already_configured": "This dongle is already added."}
+    "abort": {
+      "already_configured": "This dongle is already added."
+    },
+    "error": {
+      "invalid_address": "Enter a Bluetooth address like AA:BB:CC:DD:EE:FF."
+    }
   }
 }

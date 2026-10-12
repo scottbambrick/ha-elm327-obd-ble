@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import math
 
@@ -150,15 +151,16 @@ class ElmLink:
         )
         try:
             await asyncio.wait_for(self._prompt.wait(), timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             _LOGGER.debug("%s: no prompt after %s (got %r)", self.name, text,
                           self._rx)
         return self._rx.replace(">", "").strip()
 
     async def disconnect(self) -> None:
-        """Hang up (safe to call more than once)."""
-        if self.client:
-            try:
-                await self.client.disconnect()
-            finally:
-                self.client = None
+        """Hang up (safe to call more than once, never raises)."""
+        client, self.client = self.client, None
+        if client is None:
+            return
+        # The link may already be gone (out of range, proxy restarted)
+        with contextlib.suppress(Exception):
+            await client.disconnect()
