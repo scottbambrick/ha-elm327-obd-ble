@@ -1,4 +1,5 @@
 """A text session with an ELM327 dongle over Bluetooth LE."""
+
 from __future__ import annotations
 
 import asyncio
@@ -64,7 +65,7 @@ def data_bytes(rx: str, prefix: str, count: int) -> list[int] | None:
     if p < 0 or len(hexs) < p + len(prefix) + count * 2:
         return None
     p += len(prefix)
-    return [int(hexs[p + i * 2:p + i * 2 + 2], 16) for i in range(count)]
+    return [int(hexs[p + i * 2 : p + i * 2 + 2], 16) for i in range(count)]
 
 
 def volts(rx: str) -> float:
@@ -118,15 +119,12 @@ class ElmLink:
             # characteristic
             for service in services:
                 chars = service.characteristics
-                notify = next(
-                    (c for c in chars if "notify" in c.properties), None
-                )
+                notify = next((c for c in chars if "notify" in c.properties), None)
                 write = next(
                     (
                         c
                         for c in chars
-                        if {"write", "write-without-response"}
-                        & set(c.properties)
+                        if {"write", "write-without-response"} & set(c.properties)
                     ),
                     None,
                 )
@@ -137,8 +135,7 @@ class ElmLink:
         self._write_char = write
         self._write_response = "write" in write.properties
         await self.client.start_notify(notify, self._on_notify)
-        _LOGGER.debug("%s: using %s / %s", self.name, notify.uuid,
-                      write.uuid)
+        _LOGGER.debug("%s: using %s / %s", self.name, notify.uuid, write.uuid)
 
     async def cmd(self, text: str, timeout: float = 3) -> str:
         """Send one command and return the reply up to the '>' prompt."""
@@ -152,8 +149,7 @@ class ElmLink:
         try:
             await asyncio.wait_for(self._prompt.wait(), timeout)
         except TimeoutError:
-            _LOGGER.debug("%s: no prompt after %s (got %r)", self.name, text,
-                          self._rx)
+            _LOGGER.debug("%s: no prompt after %s (got %r)", self.name, text, self._rx)
         return self._rx.replace(">", "").strip()
 
     async def disconnect(self) -> None:

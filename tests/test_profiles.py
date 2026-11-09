@@ -1,4 +1,5 @@
 """Profile requests decode to the documented values."""
+
 from custom_components.elm327_ble.profiles import (
     AMBIENT,
     COOLANT,

@@ -2,6 +2,7 @@
 
 Every value keeps its last reading, also across Home Assistant restarts.
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -108,9 +109,7 @@ async def async_setup_entry(
 class ObdSensor(ObdEntity, RestoreSensor):
     """One value; keeps its last reading."""
 
-    def __init__(
-        self, coordinator, description: SensorEntityDescription
-    ) -> None:
+    def __init__(self, coordinator, description: SensorEntityDescription) -> None:
         """Create the sensor described by `description`."""
         super().__init__(coordinator, description.key)
         self.entity_description = description
@@ -147,8 +146,10 @@ class LastReading(ObdEntity, RestoreSensor):
         await super().async_added_to_hass()
         c = self.coordinator
         last = await self.async_get_last_sensor_data()
-        if c.last_reading is None and last is not None and isinstance(
-            last.native_value, datetime
+        if (
+            c.last_reading is None
+            and last is not None
+            and isinstance(last.native_value, datetime)
         ):
             c.last_reading = last.native_value
         state = await self.async_get_last_state()
@@ -166,8 +167,6 @@ class LastReading(ObdEntity, RestoreSensor):
         """Troubleshooting details."""
         c = self.coordinator
         return {
-            "dongle_last_answered": (
-                c.last_seen.isoformat() if c.last_seen else None
-            ),
+            "dongle_last_answered": (c.last_seen.isoformat() if c.last_seen else None),
             "last_error": c.last_error,
         }

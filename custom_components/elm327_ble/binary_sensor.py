@@ -1,4 +1,5 @@
 """Engine running, and the check-engine light (if the profile has it)."""
+
 from __future__ import annotations
 
 from homeassistant.components.binary_sensor import (

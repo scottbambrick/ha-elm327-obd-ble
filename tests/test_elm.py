@@ -1,4 +1,5 @@
 """Reply parsing for the ELM327 text protocol."""
+
 import math
 
 from custom_components.elm327_ble.elm import data_bytes, is_error, volts

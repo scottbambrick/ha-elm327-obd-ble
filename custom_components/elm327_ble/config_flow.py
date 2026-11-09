@@ -1,9 +1,8 @@
 """Config flow: add a dongle by its Bluetooth address and car profile."""
+
 from __future__ import annotations
 
 import re
-
-import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.const import CONF_ADDRESS, CONF_NAME
@@ -12,6 +11,7 @@ from homeassistant.helpers.selector import (
     SelectSelector,
     SelectSelectorConfig,
 )
+import voluptuous as vol
 
 from .const import CONF_PROFILE, DOMAIN
 from .profiles import PROFILES
@@ -28,9 +28,7 @@ class ObdConfigFlow(ConfigFlow, domain=DOMAIN):
         """Handle the only step."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            address = (
-                user_input[CONF_ADDRESS].strip().upper().replace("-", ":")
-            )
+            address = user_input[CONF_ADDRESS].strip().upper().replace("-", ":")
             name = user_input[CONF_NAME].strip()
             if not MAC_RE.fullmatch(address):
                 errors[CONF_ADDRESS] = "invalid_address"
@@ -60,6 +58,4 @@ class ObdConfigFlow(ConfigFlow, domain=DOMAIN):
         )
         if user_input is not None:
             schema = self.add_suggested_values_to_schema(schema, user_input)
-        return self.async_show_form(
-            step_id="user", data_schema=schema, errors=errors
-        )
+        return self.async_show_form(step_id="user", data_schema=schema, errors=errors)

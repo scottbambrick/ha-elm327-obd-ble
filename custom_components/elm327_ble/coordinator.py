@@ -11,13 +11,14 @@ seconds and read the profile's requests every QUERY_EVERY seconds until the
 engine stops. Hearing the dongle advertise (it wakes when the car starts)
 triggers a check straight away. Values keep their last reading.
 """
+
 from __future__ import annotations
 
 import asyncio
 import contextlib
+from datetime import datetime, timedelta
 import logging
 import math
-from datetime import datetime, timedelta
 
 from homeassistant.components import bluetooth
 from homeassistant.config_entries import ConfigEntry
@@ -61,7 +62,7 @@ class ObdCoordinator(DataUpdateCoordinator[dict]):
         self.profile_key = profile_key
         self.profile = PROFILES[profile_key]
         self.data: dict = {}
-        self.last_seen: datetime | None = None     # dongle answered
+        self.last_seen: datetime | None = None  # dongle answered
         self.last_reading: datetime | None = None  # engine ECU answered
         self.last_error: str | None = None
         self._task: asyncio.Task | None = None
@@ -87,8 +88,7 @@ class ObdCoordinator(DataUpdateCoordinator[dict]):
         if self.busy:
             return
         if self._last_start and (
-            (dt_util.utcnow() - self._last_start).total_seconds()
-            < ADVERT_DEBOUNCE
+            (dt_util.utcnow() - self._last_start).total_seconds() < ADVERT_DEBOUNCE
         ):
             return
         self._start()
@@ -116,9 +116,7 @@ class ObdCoordinator(DataUpdateCoordinator[dict]):
             self.hass, self.address, connectable=True
         )
         if device is None:
-            self.last_error = (
-                "not heard by any connectable Bluetooth adapter or proxy"
-            )
+            self.last_error = "not heard by any connectable Bluetooth adapter or proxy"
             self._push()
             return
 
@@ -140,8 +138,7 @@ class ObdCoordinator(DataUpdateCoordinator[dict]):
                 if not running:
                     break
                 if last_query is None or (
-                    (dt_util.utcnow() - last_query).total_seconds()
-                    >= QUERY_EVERY
+                    (dt_util.utcnow() - last_query).total_seconds() >= QUERY_EVERY
                 ):
                     last_query = dt_util.utcnow()
                     await self._query(link)

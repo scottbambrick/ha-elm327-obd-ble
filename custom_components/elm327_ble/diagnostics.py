@@ -1,4 +1,5 @@
 """Diagnostics: settings and the latest values (address redacted)."""
+
 from __future__ import annotations
 
 from typing import Any

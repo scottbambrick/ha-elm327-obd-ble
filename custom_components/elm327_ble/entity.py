@@ -1,4 +1,5 @@
 """Base entity: shared device info for a dongle's entities."""
+
 from __future__ import annotations
 
 from homeassistant.helpers.device_registry import (

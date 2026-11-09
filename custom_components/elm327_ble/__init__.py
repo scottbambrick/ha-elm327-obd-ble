@@ -3,6 +3,7 @@
 Each config entry is one car's dongle, read through whichever connectable
 Bluetooth adapter or ESPHome Bluetooth proxy hears it best.
 """
+
 from __future__ import annotations
 
 from homeassistant.components import bluetooth
@@ -18,9 +19,7 @@ PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
 type ObdConfigEntry = ConfigEntry[ObdCoordinator]
 
 
-async def async_setup_entry(
-    hass: HomeAssistant, entry: ObdConfigEntry
-) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: ObdConfigEntry) -> bool:
     """Set up one dongle."""
     coordinator = ObdCoordinator(
         hass,
@@ -45,11 +44,7 @@ async def async_setup_entry(
     return True
 
 
-async def async_unload_entry(
-    hass: HomeAssistant, entry: ObdConfigEntry
-) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: ObdConfigEntry) -> bool:
     """Stop any session and unload."""
     await entry.runtime_data.async_shutdown()
-    return await hass.config_entries.async_unload_platforms(
-        entry, PLATFORMS
-    )
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
