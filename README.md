@@ -69,6 +69,10 @@ Bluetooth *Classic* (SPP) dongles are not supported.
 
 ## Installation
 
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=scottbambrick&repository=ha-elm327-obd-ble&category=integration)
+
+The button adds this repository to HACS (as a custom repository) in your own Home Assistant; then install it and restart. HACS offers each new GitHub release as an update.
+
 **HACS (custom repository):** HACS → ⋮ → *Custom repositories* → add
 `https://github.com/scottbambrick/ha-elm327-obd-ble` as an *Integration*
 → install → restart Home Assistant.
@@ -77,6 +81,8 @@ Bluetooth *Classic* (SPP) dongles are not supported.
 `config/custom_components/` folder and restart.
 
 ## Setup
+
+[![Open your Home Assistant instance and start setting up this integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=elm327_ble)
 
 *Settings → Devices & services → Add integration → ELM327 OBD-II over
 Bluetooth LE*, then enter a name (e.g. "Car OBD"), the dongle's Bluetooth
